@@ -42,7 +42,6 @@
                 onload: function(response) {
                     if (response.status === 200) {
                         try {
-                            console.log("111111");
                             urlList = JSON.parse(response.responseText);
                             GM_setValue('urlList', urlList); // 保存到 Local Storage
                             GM_setValue('isLoaded', true); // 设置标志为已加载
@@ -62,9 +61,7 @@
         // 如果已经加载过，从 Local Storage 获取网址列表
         urlList = GM_getValue('urlList', []);
     }
-    console.log("urlList",urlList);
     const currentUrl = window.location.href;
-    console.log(currentUrl);
     if (currentUrl.includes('bilibili.com')) {
         handleBilibili();
     } else if (currentUrl.includes('jd.com')) {
@@ -83,9 +80,6 @@
         }
 
         // 检查当前URL是否在列表中
-        console.log("currentUrl",currentUrl);
-        console.log("extractUniqueNumber(currentUrl)",extractUniqueNumber(currentUrl));
-        console.log("extractUniqueNumber(currentUrl)",extractUniqueNumber(currentUrl));
         if (!cur_urlList.includes(extractUniqueNumber(currentUrl))) {
             if (document.readyState == 'loading') {
                 // 仍在加载，等待事件

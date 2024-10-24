@@ -22,6 +22,8 @@
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
 // @license      GPL
+// @downloadURL https://update.greasyfork.org/scripts/513801/%E5%8F%8D%E9%BE%9F%E5%85%AC.user.js
+// @updateURL https://update.greasyfork.org/scripts/513801/%E5%8F%8D%E9%BE%9F%E5%85%AC.meta.js
 // ==/UserScript==
 (async function() {
     'use strict';
@@ -75,7 +77,7 @@
         let cur_urlList = urlList["bilibili"];
 
         function extractUniqueNumber(url) {
-            const match = url.match(/\/(\d+)(\/|$)/);
+            const match = url.match(/\/(\d+)([\/\?|=]|$)/);
             return match ? match[1] : null; // 如果匹配成功，返回数字；否则返回 null
         }
 
@@ -109,7 +111,7 @@
 
         function fetchRecentDynamics(host_mid) {
             const apiUrl = `https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?host_mid=${host_mid}`;
-    
+
             GM_xmlhttpRequest({
                 method: "GET",
                 url: apiUrl,
@@ -147,8 +149,6 @@
                 }
             }
         }
-    
-
 
         }
 

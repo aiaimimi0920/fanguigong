@@ -20,13 +20,49 @@
 // @grant        GM_getTabs
 // @grant        GM_openInTab
 // @grant        GM_setClipboard
+// @grant        GM_xmlhttpRequest
 // @license      GPL
 // ==/UserScript==
 (async function() {
     'use strict';
 
-
-
+    // const jsonUrl = 'https://raw.githubusercontent.com/aiaimimi0920/fanguigong/main/blacklist.json';
+    const jsonUrl = 'https://pub-120dfe5d44734d658b1a5a6e046fd9a9.r2.dev/blacklist.json';
+    let urlList = [];
+    const isLoaded = GM_getValue('isLoaded', false); // 从存储中获取标志
+    const lastUpdate = GM_getValue('lastUpdate', 0); // 获取上次更新的时间戳
+    let shouldUpdate = (Date.now() - lastUpdate) > 24 * 60 * 60 * 1000; // 每24小时更新一次
+    // shouldUpdate = true;
+    // 如果还未加载或者需要更新
+    if (!isLoaded || shouldUpdate) {
+        await new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: jsonUrl,
+                onload: function(response) {
+                    if (response.status === 200) {
+                        try {
+                            console.log("111111");
+                            urlList = JSON.parse(response.responseText);
+                            GM_setValue('urlList', urlList); // 保存到 Local Storage
+                            GM_setValue('isLoaded', true); // 设置标志为已加载
+                            GM_setValue('lastUpdate', Date.now()); // 保存当前时间戳
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    } else {
+                        reject(new Error('Failed to load URL list'));
+                    }
+                },
+                onerror: reject,
+            });
+        });
+    } else {
+        // 如果已经加载过，从 Local Storage 获取网址列表
+        urlList = GM_getValue('urlList', []);
+    }
+    console.log("urlList",urlList);
     const currentUrl = window.location.href;
     console.log(currentUrl);
     if (currentUrl.includes('bilibili.com')) {
@@ -39,7 +75,7 @@
     }
 
     function handleBilibili() {
-        const urlList = ["2229752","570064"];
+        let cur_urlList = urlList["bilibili"];
 
         function extractUniqueNumber(url) {
             // 使用正则表达式匹配最后一个数字字段，确保后面不是字母
@@ -52,7 +88,7 @@
         console.log("currentUrl",currentUrl);
         console.log("extractUniqueNumber(currentUrl)",extractUniqueNumber(currentUrl));
         console.log("extractUniqueNumber(currentUrl)",extractUniqueNumber(currentUrl));
-        if (!urlList.includes(extractUniqueNumber(currentUrl))) {
+        if (!cur_urlList.includes(extractUniqueNumber(currentUrl))) {
             if (document.readyState == 'loading') {
                 // 仍在加载，等待事件
                     document.addEventListener('DOMContentLoaded', check_work);
@@ -65,7 +101,7 @@
 
         function check_work(){
             let links = document.querySelectorAll(".up-avatar"); // 假设链接在 <a> 标签内
-            if(!urlList.includes(extractUniqueNumber(links[0].href))){
+            if(!cur_urlList.includes(extractUniqueNumber(links[0].href))){
                 return; // 如果不在列表中，直接返回
             }
             work();

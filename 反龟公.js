@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         反龟公
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Display a huge red cross in the center of the screen on a specific webpage until navigating away
 // @author       mimi
 // @match        *://*/*
@@ -78,10 +78,8 @@
         let cur_urlList = urlList["bilibili"];
 
         function extractUniqueNumber(url) {
-            // 使用正则表达式匹配最后一个数字字段，确保后面不是字母
-            const match = url.match(/\/(\d+)(?=\?|$)/);
-            // 返回匹配到的数字，如果没有匹配到则返回 null
-            return match ? match[1] : null;
+            const match = url.match(/\/(\d+)(\/|$)/);
+            return match ? match[1] : null; // 如果匹配成功，返回数字；否则返回 null
         }
 
         // 检查当前URL是否在列表中
@@ -101,11 +99,61 @@
 
         function check_work(){
             let links = document.querySelectorAll(".up-avatar"); // 假设链接在 <a> 标签内
-            if(!cur_urlList.includes(extractUniqueNumber(links[0].href))){
+            let cur_url;
+            if (links.length == 0) {
+                cur_url = extractUniqueNumber(currentUrl)
+            }else{
+                cur_url = extractUniqueNumber(links[0].href)
+            }
+            if(!cur_urlList.includes(cur_url)){
+                // 不在列表中的二次检测动态
+                fetchRecentDynamics(cur_url);
                 return; // 如果不在列表中，直接返回
             }
             work();
         }
+
+        function fetchRecentDynamics(host_mid) {
+            const apiUrl = `https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/all?host_mid=${host_mid}`;
+    
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: apiUrl,
+                onload: function(response) {
+                    if (response.status === 200) {
+                        const data = JSON.parse(response.responseText);
+                        console.log('发布人最近的动态:', data);
+                        // 检查动态中是否包含“京东”和“红包”
+                        checkForKeywords(data.data); // 传递 data.data 进行检查
+                    } else {
+                        console.error('获取动态失败:', response.statusText);
+                    }
+                },
+                onerror: function(error) {
+                    console.error('请求发生错误:', error);
+                }
+            });
+        }
+        function checkForKeywords(data) {
+        // 检查 data 中是否存在 items
+            if (data && data.items) {
+                for (const item of data.items) {
+                    // 检查 type 是否为 DYNAMIC_TYPE_DRAW
+                    if (item.type === "DYNAMIC_TYPE_DRAW") {
+                        // 获取模块动态中的 desc 的 text
+                        const text = item.modules?.module_dynamic?.desc?.text;
+                        if (text) {
+                            // 检查 text 中是否包含“京东”和“红包”
+                            if (text.includes("京东") && text.includes("红包")) {
+                                work(); // 调用 work 方法
+                                break; // 结束循环
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
 
 
         }

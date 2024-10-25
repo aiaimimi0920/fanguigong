@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         反龟公
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @description  Display a huge red cross in the center of the screen on a specific webpage until navigating away
 // @author       mimi
 // @match        *://*/*

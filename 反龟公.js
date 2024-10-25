@@ -159,7 +159,7 @@
                         const cur_time = item.modules?.module_author?.pub_ts;
 
                         const text = item.modules?.module_dynamic?.desc?.text;
-                        if (text&&cur_time&&cur_time>=1728835200)  {
+                        if (text&&cur_time&&cur_time>=1729699200)  {
                             // 检查 text 中是否包含“京东”和“红包”
                             if ((text.includes("京东") && text.includes("红包")) || text.includes("东哥真的出血了")) {
                                 work(); // 调用 work 方法
@@ -170,7 +170,6 @@
                 }
             }
         }
-
         }
 
     function handleJD() {

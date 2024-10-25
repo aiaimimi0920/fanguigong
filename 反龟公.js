@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         反龟公
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      0.7
 // @description  Display a huge red cross in the center of the screen on a specific webpage until navigating away
 // @author       mimi
 // @match        *://*/*
@@ -141,7 +141,7 @@
                     // 检查 type 是否为 DYNAMIC_TYPE_DRAW
                     if (item.type === "DYNAMIC_TYPE_DRAW") {
                         // 获取模块动态中的 desc 的 text
-                        
+
                         const cur_time = item.modules?.module_author?.pub_ts;
 
                         const text = item.modules?.module_dynamic?.desc?.text;
@@ -221,10 +221,10 @@
         rightText.style.transform = 'translateY(-50%)'; // 垂直居中
         rightText.style.writingMode = 'vertical-rl'; // 竖直排列文本
 
-
+        const gifDiv = document.createElement('div');
         // 显示大乌龟GIF
         function showTurtleGif() {
-            const gifDiv = document.createElement('div');
+
             const gifImg = document.createElement('img');
             gifImg.src = turtleGifBase64;  // 使用base64编码的GIF图片
             gifImg.style.width = '50vw'; // 设置宽度为屏幕宽度的50%
@@ -241,19 +241,6 @@
             document.body.appendChild(gifDiv);
         }
 
-
-        // 创建红色叉叉
-        // const cross = document.createElement('div');
-        // cross.style.color = '#E0181E';
-        // cross.textContent = '❌';
-        // cross.style.textAlign = 'center';
-        // cross.style.fontSize = 'min(40vw, 40vh)';
-        // cross.style.position = 'fixed';
-        // cross.style.zIndex = '9999';
-        // cross.style.left = '50%';
-        // cross.style.top = '50vh'; // 调整叉叉的垂直位置
-        // cross.style.transform = 'translate(-50%, -50%)'; // 垂直和水平居中
-
         // 创建中间的乌龟
         showTurtleGif();
 
@@ -264,13 +251,43 @@
         bottomText.style.width = '40vw';
         bottomText.style.height =  '20vh'; // 自适应高度
 
+
+        // 创建删除按钮
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '删除所有';
+        Object.assign(deleteButton.style, {
+            position: 'fixed',
+            bottom: '10%', // 设置距离底部的距离
+            right: '10%',  // 设置距离右边的距离
+            zIndex: '10002', // 确保在最上层
+            padding: '10px 15px',
+            backgroundColor: '#E0181E',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '16px',
+        });
+
+        deleteButton.onclick = function() {
+            // 删除所有元素
+            turtlePattern.remove();
+            topText.remove();
+            leftText.remove();
+            rightText.remove();
+            bottomText.remove();
+            gifDiv.remove();
+            deleteButton.remove();
+        };
+
+
         // 将所有元素添加到文档中
         document.body.appendChild(turtlePattern);
         document.body.appendChild(topText);
         document.body.appendChild(leftText);
         document.body.appendChild(rightText);
-        // document.body.appendChild(cross);
         document.body.appendChild(bottomText);
+        document.body.appendChild(deleteButton);
 
         // 清理事件
         window.addEventListener('beforeunload', () => {
@@ -278,8 +295,9 @@
             topText.remove();
             leftText.remove();
             rightText.remove();
-            cross.remove();
             bottomText.remove();
+            gifDiv.remove();
+            deleteButton.remove();
         });
     }
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         反龟公
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @description  Display a huge red cross in the center of the screen on a specific webpage until navigating away
 // @author       mimi
 // @match        *://*/*
@@ -38,6 +38,15 @@
     const isLoaded = GM_getValue('isLoaded', false); // 从存储中获取标志
     const lastUpdate = GM_getValue('lastUpdate', 0); // 获取上次更新的时间戳
     let shouldUpdate = (Date.now() - lastUpdate) > 24 * 60 * 60 * 1000; // 每24小时更新一次
+
+    // 当前版本
+    const currentVersion = '0.8';
+
+    // 获取存储的旧版本
+    const oldVersion = GM_getValue('scriptVersion', '0.0');
+    if (oldVersion !== currentVersion) {
+        shouldUpdate = true;
+    }
     // shouldUpdate = true;
     // 如果还未加载或者需要更新
     if (!isLoaded || shouldUpdate) {
@@ -67,6 +76,11 @@
         // 如果已经加载过，从 Local Storage 获取网址列表
         urlList = GM_getValue('urlList', []);
     }
+
+    if (oldVersion !== currentVersion) {
+        GM_setValue('scriptVersion', currentVersion);
+    }
+
     const currentUrl = window.location.href;
     if (currentUrl.includes('bilibili.com')) {
         handleBilibili();
@@ -147,7 +161,7 @@
                         const text = item.modules?.module_dynamic?.desc?.text;
                         if (text&&cur_time&&cur_time>=1728835200)  {
                             // 检查 text 中是否包含“京东”和“红包”
-                            if (text.includes("京东") && text.includes("红包")) {
+                            if ((text.includes("京东") && text.includes("红包")) || text.includes("东哥真的出血了")) {
                                 work(); // 调用 work 方法
                                 break; // 结束循环
                             }

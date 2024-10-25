@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         反龟公
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      0.10
 // @description  Display a huge red cross in the center of the screen on a specific webpage until navigating away
 // @author       mimi
 // @match        *://*/*
@@ -159,7 +159,8 @@
                         const cur_time = item.modules?.module_author?.pub_ts;
 
                         const text = item.modules?.module_dynamic?.desc?.text;
-                        if (text&&cur_time&&cur_time>=1729699200)  {
+                        // 检查2024-10-23 21:00:00 后的动态
+                        if (text&&cur_time&&cur_time>=1729688400)  {
                             // 检查 text 中是否包含“京东”和“红包”
                             if ((text.includes("京东") && text.includes("红包")) || text.includes("东哥真的出血了")) {
                                 work(); // 调用 work 方法

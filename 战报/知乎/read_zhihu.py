@@ -20,7 +20,7 @@ for item in data['search_list']:
     })
 
 # 指定 CSV 文件名
-csv_file = 'zhihu.csv'
+csv_file = 'data.csv'
 
 # 写入 CSV 文件
 with open(csv_file, mode='w', newline='', encoding='utf-8-sig') as file:

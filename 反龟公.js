@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         反龟公
 // @namespace    http://tampermonkey.net/
-// @version      0.10
+// @version      0.11
 // @description  Display a huge red cross in the center of the screen on a specific webpage until navigating away
 // @author       mimi
-// @match        *://*/*
+// @match        *://*.bilibili.com/*
+// @match        *://*.jd.com/*
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_setValue
